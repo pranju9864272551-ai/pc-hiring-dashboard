@@ -190,9 +190,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* FEAT CHECKBOXES */
 .feat-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
-.feat-cb{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);font-size:12px;cursor:pointer;transition:all .12s;user-select:none}
-.feat-cb:hover{border-color:var(--accent)}
-.feat-cb.on{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text)}
+.feat-cb{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--surface);font-size:12px;cursor:pointer;transition:all .15s;user-select:none}
+.feat-cb:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent-text)}
+.feat-cb.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500;box-shadow:0 2px 6px rgba(27,79,216,.25)}
+.feat-cb.on::before{content:"✓ ";font-weight:700}
 .feat-cb input{display:none}
 
 /* COMBO PICKER */
@@ -304,9 +305,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <datalist id="rolesList"></datalist>
         </div>
       </div>
-      <div class="fl" style="margin-top:12px">Select Features for this Combination *</div>
+      <div class="fl" style="margin-top:12px">Select Features for this Combination * <span style="font-size:10px;color:var(--accent);font-weight:400;text-transform:none;letter-spacing:0">(click each feature to toggle on/off — selected ones turn blue)</span></div>
       <div class="feat-grid" id="ah-featGrid"></div>
-      <div id="ah-combo-preview" style="margin-top:8px;font-size:11px;color:var(--text3)"></div>
+      <div id="ah-selected-pills" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;min-height:24px"></div>
+      <div id="ah-combo-preview" style="margin-top:8px"></div>
     </div>
     <div class="modal-ftr">
       <div class="save-note">💾 Saved to browser — persists after refresh</div>
@@ -770,7 +772,7 @@ function openModal(id){
     document.getElementById("ah-name").value="";
     document.getElementById("ah-role").value="";
     renderFeatGrid([]);
-    document.getElementById("ah-combo-preview").textContent="";
+    updateComboPreview();
   }
   if(id==="addCand"){
     populateHiringSelect();
@@ -813,23 +815,28 @@ function renderFeatGrid(selected){
   var html="";
   FEATURES.forEach(function(f){
     var on=selected.indexOf(f.key)>=0;
-    html+='<label class="feat-cb'+(on?" on":"")+'" onclick="toggleFeatCb(this,\''+f.key+'\')">'
-      +'<input type="checkbox"'+(on?" checked":"")+'>'+esc(f.label)+'</label>';
+    var id="fcb-"+f.key;
+    html+='<label class="feat-cb'+(on?" on":"")+'" for="'+id+'">'
+      +'<input type="checkbox" id="'+id+'" data-key="'+f.key+'"'+(on?" checked":"")
+      +' onchange="onFeatCbChange(this)">'
+      +esc(f.label)+'</label>';
   });
   document.getElementById("ah-featGrid").innerHTML=html;
 }
 
-function toggleFeatCb(el,key){
-  el.classList.toggle("on");
+function onFeatCbChange(checkbox){
+  var label=checkbox.closest("label")||checkbox.parentElement;
+  if(label){
+    if(checkbox.checked){label.classList.add("on");}
+    else{label.classList.remove("on");}
+  }
   updateComboPreview();
 }
 
 function getSelectedFeats(){
   var feats=[];
-  document.querySelectorAll("#ah-featGrid .feat-cb.on").forEach(function(el){
-    var label=el.textContent.trim();
-    var f=FEATURES.find(function(x){return x.label===label;});
-    if(f)feats.push(f.key);
+  document.querySelectorAll("#ah-featGrid input[type=checkbox]:checked").forEach(function(cb){
+    feats.push(cb.getAttribute("data-key"));
   });
   return feats;
 }
@@ -837,14 +844,35 @@ function getSelectedFeats(){
 function updateComboPreview(){
   var feats=getSelectedFeats();
   var prev=document.getElementById("ah-combo-preview");
-  if(!feats.length){prev.textContent="";return;}
+  var pillsEl=document.getElementById("ah-selected-pills");
+
+  // Show selected feature pills
+  if(pillsEl){
+    if(feats.length){
+      pillsEl.innerHTML=feats.map(function(k){
+        var f=FEATURES.find(function(x){return x.key===k;});
+        return f?'<span class="pill '+f.color+'" style="font-size:11px">'+esc(f.label)+'</span>':"";
+      }).join("");
+    } else {
+      pillsEl.innerHTML='<span style="font-size:11px;color:var(--text3);font-style:italic">No features selected yet — tick the boxes above</span>';
+    }
+  }
+
+  if(!feats.length){
+    prev.innerHTML='<div style="font-size:12px;color:var(--text3)">0 features selected</div>';
+    return;
+  }
+
   var k=comboKey(feats);
   var hiringMap=buildHiringMap();
   var existing=hiringMap[k];
+
   if(existing&&existing.length){
-    prev.innerHTML='<span style="color:var(--amber)">⚠ This combination already has: '+existing.map(function(h){return esc(h.name);}).join(", ")+'</span>';
+    prev.innerHTML='<div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--amber)">'+
+      '⚠️  '+feats.length+' features selected.  This combination already has: <strong>'+existing.map(function(h){return esc(h.name);}).join(", ")+'</strong>.  You can still add another hiring to it.</div>';
   } else {
-    prev.innerHTML='<span style="color:var(--green)">✓ New combination with '+feats.length+' features</span>';
+    prev.innerHTML='<div style="background:var(--green-light);border:1px solid var(--green);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--green)">'+
+      '✅  '+feats.length+' features selected — new combination, no hiring assigned yet.</div>';
   }
 }
 
