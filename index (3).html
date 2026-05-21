@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C Hiring Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F3EE;--surface:#FFF;--surface2:#ECEAE4;--border:#D9D6CE;--border-light:#EAE8E2;
+  --text:#1A1916;--text2:#6B6860;--text3:#9B9890;
+  --accent:#1B4FD8;--accent-light:#E8EDFB;--accent-text:#0D2E8A;
+  --green:#1A7A4A;--green-light:#E3F5EC;
+  --amber:#C07A10;--amber-light:#FDF0DC;
+  --red:#C0392B;--red-light:#FDECEA;
+  --teal:#0E7A6E;--teal-light:#E0F5F3;
+  --purple:#5B3DB5;--purple-light:#EDE9FA;
+  --coral:#C04A2B;--coral-light:#FAEDE9;
+  --pink:#B03A7A;--pink-light:#FAE8F2;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.1);
+  --r:10px;--r-sm:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+
+/* HEADER */
+.hdr{background:var(--text);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr-brand{display:flex;align-items:center;gap:12px}
+.hdr-icon{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hdr-title{font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-stats{display:flex;gap:20px}
+.hstat-val{font-size:18px;font-weight:600;font-family:'DM Mono',monospace;color:#fff;text-align:right}
+.hstat-lbl{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em;text-align:right}
+.hdr-btn{padding:7px 14px;border-radius:var(--r-sm);border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .12s}
+.hdr-btn:hover{background:rgba(255,255,255,.2)}
+.hdr-btn.green{background:var(--green);border-color:var(--green)}
+.hdr-btn.green:hover{background:#125c37}
+
+/* LAYOUT */
+.layout{display:flex;height:calc(100vh - 76px)}
+
+/* SIDEBAR */
+.sidebar{width:236px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sb-sec{padding:12px 14px;border-bottom:1px solid var(--border-light)}
+.sb-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.role-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:6px 10px;border-radius:var(--r-sm);border:none;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .12s;text-align:left}
+.role-btn:hover{background:var(--surface2);color:var(--text)}
+.role-btn.active{background:var(--accent-light);color:var(--accent-text);font-weight:500}
+.rbadge{font-size:10px;padding:1px 6px;border-radius:10px;background:var(--surface2);color:var(--text3);font-family:'DM Mono',monospace}
+.role-btn.active .rbadge{background:var(--accent);color:#fff}
+.feat-chips{max-height:160px;overflow-y:auto}
+.fchip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;margin:2px;transition:all .12s}
+.fchip:hover{border-color:var(--accent);color:var(--accent)}
+.fchip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.fchip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sb-action-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;margin-bottom:6px;border:1px solid}
+.sb-action-btn:last-child{margin-bottom:0}
+.btn-add-hiring{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.btn-add-hiring:hover{background:var(--green);color:#fff}
+.btn-add-cand{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.btn-add-cand:hover{background:var(--accent);color:#fff}
+
+/* CONTENT */
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.toolbar{padding:10px 18px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:160px;max-width:280px}
+.search-wrap input{width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border .15s}
+.search-wrap input:focus{border-color:var(--accent)}
+.s-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;font-size:13px}
+.fcount-tabs{display:flex;gap:3px;flex-wrap:wrap}
+.fct{font-size:11px;padding:5px 9px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'DM Mono',monospace;transition:all .12s}
+.fct:hover{border-color:var(--accent);color:var(--accent)}
+.fct.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.toggle-lbl{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer;margin-left:auto;white-space:nowrap}
+.toggle-lbl input{cursor:pointer;accent-color:var(--accent)}
+
+/* LIST */
+.list-wrap{flex:1;overflow-y:auto;padding:12px 18px}
+.count-info{font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.chip-blue{background:var(--accent-light);color:var(--accent-text)}
+.chip-green{background:var(--green-light);color:var(--green)}
+.combo-list{display:flex;flex-direction:column;gap:5px}
+.combo-card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .15s,border-color .15s}
+.combo-card:hover{box-shadow:var(--shadow-md);border-color:var(--border)}
+.combo-card.has-hiring{border-left:3px solid var(--accent)}
+.combo-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none}
+.combo-idx{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);min-width:36px;flex-shrink:0}
+.feat-pills{display:flex;flex-wrap:wrap;gap:3px;flex:1}
+.pill{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.p-blue{background:var(--accent-light);color:var(--accent-text)}
+.p-teal{background:var(--teal-light);color:var(--teal)}
+.p-amber{background:var(--amber-light);color:var(--amber)}
+.p-coral{background:var(--coral-light);color:var(--coral)}
+.p-purple{background:var(--purple-light);color:var(--purple)}
+.p-green{background:var(--green-light);color:var(--green)}
+.p-pink{background:var(--pink-light);color:var(--pink)}
+.p-gray{background:var(--surface2);color:var(--text2)}
+.combo-meta{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.h-tag{font-size:10px;padding:3px 9px;border-radius:20px;background:var(--accent);color:#fff;font-weight:500;white-space:nowrap}
+.c-badge{font-size:10px;padding:3px 8px;border-radius:20px;background:var(--surface2);color:var(--text3);font-family:'DM Mono',monospace}
+.no-h{font-size:11px;color:var(--text3);font-style:italic}
+.chev{font-size:13px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.combo-detail{display:none;border-top:1px solid var(--border-light)}
+.combo-detail.open{display:block}
+.h-block{padding:12px 14px;border-bottom:1px solid var(--border-light)}
+.h-block:last-child{border-bottom:none}
+.h-block-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.h-block-name{font-size:13px;font-weight:600;color:var(--text)}
+.h-block-role{font-size:11px;color:var(--text3);margin-top:2px}
+.h-block-actions{display:flex;gap:5px;flex-shrink:0}
+.icon-btn{padding:4px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;font-size:11px;cursor:pointer;color:var(--text2);transition:all .12s;font-family:'DM Sans',sans-serif}
+.icon-btn:hover{background:var(--surface2)}
+.icon-btn.danger:hover{background:var(--red-light);color:var(--red);border-color:var(--red)}
+.icon-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.icon-btn.primary:hover{background:var(--accent-text)}
+.cand-tbl{width:100%;border-collapse:collapse}
+.cand-tbl th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border-light)}
+.cand-tbl td{padding:7px 10px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.cand-tbl tr:last-child td{border-bottom:none}
+.cand-tbl tr:hover td{background:var(--bg)}
+.c-av{width:26px;height:26px;border-radius:50%;background:var(--accent-light);color:var(--accent-text);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Mono',monospace}
+.c-nc{display:flex;align-items:center;gap:8px}
+.c-name{font-size:12px;font-weight:500;color:var(--text)}
+.c-contact{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:1px}
+.c-fb{font-size:11px;color:var(--text2);max-width:200px}
+.sp{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;white-space:nowrap;display:inline-block}
+.sp-ok{background:var(--green-light);color:var(--green)}
+.sp-warn{background:var(--amber-light);color:var(--amber)}
+.sp-pend{background:var(--surface2);color:var(--text3)}
+.rpt-a{font-size:11px;color:var(--accent);text-decoration:none;font-weight:500}
+.rpt-a:hover{text-decoration:underline}
+.no-h-msg{padding:12px 14px;font-size:12px;color:var(--text3);font-style:italic;display:flex;align-items:center;justify-content:space-between}
+
+/* PAGER */
+.pager{display:flex;align-items:center;gap:4px;padding:10px 18px;background:var(--surface);border-top:1px solid var(--border);flex-wrap:wrap}
+.pg-btn{padding:5px 11px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .12s}
+.pg-btn:hover:not([disabled]){border-color:var(--accent);color:var(--accent)}
+.pg-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.pg-btn[disabled]{opacity:.35;cursor:default}
+.pg-info{font-size:11px;color:var(--text3);margin-left:6px;font-family:'DM Mono',monospace}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-hdr{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-shrink:0}
+.modal-title{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text)}
+.modal-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.modal-x{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0;transition:background .12s}
+.modal-x:hover{background:var(--surface2)}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.modal-ftr{padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.fl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;margin-top:12px}
+.fl:first-child{margin-top:0}
+.fi{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;transition:border .15s}
+.fi:focus{border-color:var(--accent)}
+.fi-sel{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;cursor:pointer}
+.fi-sel:focus{border-color:var(--accent)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.note{font-size:11px;color:var(--text3)}
+.save-note{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px}
+.btn-row{display:flex;gap:7px}
+.btn{padding:7px 16px;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+.btn-primary:hover{background:var(--accent-text)}
+.btn-green{background:var(--green);color:#fff;border:1px solid var(--green)}
+.btn-green:hover{background:#125c37}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2)}
+.btn-danger{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+
+/* CANDIDATE TABLE IN MODAL */
+.cand-input-tbl{width:100%;border-collapse:collapse;margin-top:8px}
+.cand-input-tbl th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border-light);background:var(--surface2)}
+.cand-input-tbl td{padding:4px 4px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.cand-input-tbl tr:last-child td{border-bottom:none}
+.cand-input-tbl input{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--bg);color:var(--text);outline:none}
+.cand-input-tbl input:focus{border-color:var(--accent)}
+.del-row-btn{width:24px;height:24px;border-radius:4px;border:none;background:var(--red-light);color:var(--red);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.del-row-btn:hover{background:var(--red);color:#fff}
+.add-row-btn{margin-top:8px;padding:5px 12px;border-radius:var(--r-sm);border:1px dashed var(--border);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;width:100%;transition:all .12s;font-family:'DM Sans',sans-serif}
+.add-row-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+
+/* FEAT CHECKBOXES */
+.feat-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.feat-cb{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);font-size:12px;cursor:pointer;transition:all .12s;user-select:none}
+.feat-cb:hover{border-color:var(--accent)}
+.feat-cb.on{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text)}
+.feat-cb input{display:none}
+
+/* COMBO PICKER */
+.combo-picker{max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px}
+.combo-pick-row{padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--border-light);font-size:12px;color:var(--text2);transition:background .1s;display:flex;align-items:center;justify-content:space-between}
+.combo-pick-row:last-child{border-bottom:none}
+.combo-pick-row:hover{background:var(--accent-light);color:var(--accent-text)}
+.combo-pick-row.selected{background:var(--accent);color:#fff}
+.combo-pick-feats{display:flex;flex-wrap:wrap;gap:3px;flex:1}
+.combo-pick-count{font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);flex-shrink:0;margin-left:8px}
+.combo-pick-row.selected .combo-pick-count{color:rgba(255,255,255,.7)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:10px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.green{background:var(--green)}
+.toast.red{background:var(--red)}
+
+/* IMPORT TAB */
+.import-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px}
+.import-tab{padding:8px 16px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.import-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500}
+.import-panel{display:none}
+.import-panel.active{display:block}
+.paste-area{width:100%;min-height:120px;padding:10px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);color:var(--text);resize:vertical;outline:none;transition:border .15s}
+.paste-area:focus{border-color:var(--accent)}
+.format-hint{background:var(--surface2);border-radius:var(--r-sm);padding:8px 10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.7}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-icon">📋</div>
+    <div>
+      <div class="hdr-title">P&C Hiring Dashboard</div>
+      <div class="hdr-sub">Candidate performance by interview combination</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-stats" id="hdrStats"></div>
+    <button class="hdr-btn green" onclick="openModal('addHiring')">＋ New Hiring</button>
+    <button class="hdr-btn" onclick="openModal('addCand')">＋ Add Candidates</button>
+    <button class="hdr-btn" onclick="exportBackup()" title="Download all data as backup">⬇ Backup</button>
+    <button class="hdr-btn" onclick="triggerRestore()" title="Restore from backup">↑ Restore</button>
+    <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)">
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-sec">
+      <div class="sb-lbl">Filter by Role</div>
+      <div id="roleList"></div>
+    </div>
+    <div class="sb-sec" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div class="sb-lbl">Filter by Feature</div>
+      <div class="feat-chips" id="featChips"></div>
+    </div>
+    <div class="sb-sec">
+      <button class="sb-action-btn btn-add-hiring" onclick="openModal('addHiring')">＋ Create New Hiring</button>
+      <button class="sb-action-btn btn-add-cand" onclick="openModal('addCand')">＋ Add Candidates</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="s-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search combination, hiring, candidate..." oninput="onSearch()">
+      </div>
+      <div class="fcount-tabs" id="fcountTabs"></div>
+      <label class="toggle-lbl">
+        <input type="checkbox" id="onlyHiring" onchange="render()"> With hiring only
+      </label>
+    </div>
+    <div class="list-wrap">
+      <div class="count-info" id="countInfo"></div>
+      <div class="combo-list" id="comboList"></div>
+    </div>
+    <div class="pager" id="pager"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL: ADD / EDIT HIRING ══ -->
+<div class="overlay" id="ovAddHiring" onclick="ovClick(event,'ovAddHiring')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title" id="addHiringTitle">Create New Hiring</div>
+        <div class="modal-sub">Define a hiring group and assign it to a feature combination</div>
+      </div>
+      <button class="modal-x" onclick="closeModal('ovAddHiring')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="two-col">
+        <div>
+          <div class="fl">Hiring Name *</div>
+          <input class="fi" id="ah-name" placeholder="e.g. Python Developer 4">
+        </div>
+        <div>
+          <div class="fl">Role / Department *</div>
+          <input class="fi" id="ah-role" placeholder="e.g. Python Developer" list="rolesList">
+          <datalist id="rolesList"></datalist>
+        </div>
+      </div>
+      <div class="fl" style="margin-top:12px">Select Features for this Combination *</div>
+      <div class="feat-grid" id="ah-featGrid"></div>
+      <div id="ah-combo-preview" style="margin-top:8px;font-size:11px;color:var(--text3)"></div>
+    </div>
+    <div class="modal-ftr">
+      <div class="save-note">💾 Saved to browser — persists after refresh</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="closeModal('ovAddHiring')">Cancel</button>
+        <button class="btn btn-green" onclick="saveHiring()">Save Hiring</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: ADD CANDIDATES ══ -->
+<div class="overlay" id="ovAddCand" onclick="ovClick(event,'ovAddCand')">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title">Add Candidates</div>
+        <div class="modal-sub">Select a hiring then fill the table — or paste data directly</div>
+      </div>
+      <button class="modal-x" onclick="closeModal('ovAddCand')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fl">Select Hiring *</div>
+      <select class="fi-sel" id="ac-hiring" onchange="onHiringChange()">
+        <option value="">— choose a hiring —</option>
+      </select>
+
+      <div id="ac-combo-info" style="margin-top:8px;display:none">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Combination features:</div>
+        <div id="ac-combo-feats" style="display:flex;flex-wrap:wrap;gap:3px"></div>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="import-tabs">
+          <div class="import-tab active" onclick="switchTab('table')">📋 Fill Table</div>
+          <div class="import-tab" onclick="switchTab('paste')">📄 Paste Data</div>
+        </div>
+
+        <!-- TABLE TAB -->
+        <div class="import-panel active" id="tab-table">
+          <table class="cand-input-tbl" id="candInputTbl">
+            <thead>
+              <tr>
+                <th style="width:28px">#</th>
+                <th>Full Name *</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Report Link (Google Drive)</th>
+                <th>Feedback / Problems</th>
+                <th style="width:30px"></th>
+              </tr>
+            </thead>
+            <tbody id="candInputBody"></tbody>
+          </table>
+          <button class="add-row-btn" onclick="addCandRow()">＋ Add another candidate</button>
+        </div>
+
+        <!-- PASTE TAB -->
+        <div class="import-panel" id="tab-paste">
+          <div class="fl">Expected format (tab-separated from Excel / Google Sheets)</div>
+          <div class="format-hint">
+            NAME &nbsp;&nbsp; PHONE &nbsp;&nbsp; EMAIL &nbsp;&nbsp; REPORT LINK &nbsp;&nbsp; FEEDBACK<br>
+            Riya Sharma &nbsp;&nbsp; 9876543210 &nbsp;&nbsp; riya@email.com &nbsp;&nbsp; https://drive.google.com/... &nbsp;&nbsp; No issues<br>
+            Arjun Mehta &nbsp;&nbsp; 8765432109 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Audio not working
+          </div>
+          <textarea class="paste-area" id="pasteArea" placeholder="Copy rows from Excel / Google Sheets (Ctrl+C) and paste here (Ctrl+V)..." oninput="previewPaste()"></textarea>
+          <div id="pastePreview" style="margin-top:8px;font-size:12px;color:var(--text3)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <div class="save-note">💾 Saved permanently to browser storage</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="closeModal('ovAddCand')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveCandidates()">Save Candidates</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: EDIT CANDIDATE ══ -->
+<div class="overlay" id="ovEditCand" onclick="ovClick(event,'ovEditCand')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hdr">
+      <div><div class="modal-title">Edit Candidate</div></div>
+      <button class="modal-x" onclick="closeModal('ovEditCand')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ec-hid">
+      <input type="hidden" id="ec-idx">
+      <div class="fl">Full Name</div>
+      <input class="fi" id="ec-name">
+      <div class="two-col">
+        <div><div class="fl">Phone</div><input class="fi" id="ec-phone"></div>
+        <div><div class="fl">Email</div><input class="fi" id="ec-email"></div>
+      </div>
+      <div class="fl">Report Link</div>
+      <input class="fi" id="ec-report" placeholder="https://drive.google.com/...">
+      <div class="fl">Feedback / Problems Faced</div>
+      <input class="fi" id="ec-feedback" placeholder="e.g. No issues encountered / Audio not working">
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-danger" onclick="deleteCandidate()">Delete</button>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="closeModal('ovEditCand')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditCandidate()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: CONFIRM DELETE ══ -->
+<div class="overlay" id="ovConfirm" onclick="ovClick(event,'ovConfirm')">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-hdr">
+      <div><div class="modal-title">Confirm Delete</div></div>
+      <button class="modal-x" onclick="closeModal('ovConfirm')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMsg" style="font-size:14px;color:var(--text2);line-height:1.6"></p>
+    </div>
+    <div class="modal-ftr">
+      <div></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="closeModal('ovConfirm')">Cancel</button>
+        <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+// FEATURES
+// ════════════════════════════════════════════════════
+var FEATURES=[
+  {key:"monitors",   label:"Multiple monitors",  color:"p-blue",  dot:"#1B4FD8"},
+  {key:"plagiarism", label:"AI plagiarism",       color:"p-green", dot:"#1A7A4A"},
+  {key:"copypaste",  label:"Copy / paste",        color:"p-blue",  dot:"#1B4FD8"},
+  {key:"tab",        label:"Tab proctoring",      color:"p-coral", dot:"#C04A2B"},
+  {key:"multipeople",label:"Multiple people",     color:"p-amber", dot:"#C07A10"},
+  {key:"lookaway",   label:"Looking away",        color:"p-teal",  dot:"#0E7A6E"},
+  {key:"desktop",    label:"Desktop environment", color:"p-gray",  dot:"#6B6860"},
+  {key:"mobile",     label:"Mobile access",       color:"p-pink",  dot:"#B03A7A"},
+  {key:"lipsync",    label:"Lip sync",            color:"p-pink",  dot:"#B03A7A"},
+  {key:"followup",   label:"Follow-up questions", color:"p-amber", dot:"#C07A10"},
+  {key:"fullscreen", label:"Full-screen mode",    color:"p-coral", dot:"#C04A2B"},
+  {key:"aiavatar",   label:"AI avatar",           color:"p-purple",dot:"#5B3DB5"}
+];
+
+// ════════════════════════════════════════════════════
+// PERSISTENT STORAGE
+// ════════════════════════════════════════════════════
+var STORE_KEY="pc_hiring_v3";
+
+var DEFAULT_HIRINGS=[
+  {id:"PY1",name:"Python Developer 1",role:"Python Developer",features:["monitors","lookaway","multipeople","aiavatar","tab"],candidates:[
+    {name:"Karan Kumar Singh",phone:"7050146225",email:"",report:"https://drive.google.com/file/d/1n3itnIs1tresT22E9kUbE9Ei51Uxyh2H/view",feedback:"No issues encountered."},
+    {name:"Akshat Bhatt",phone:"7018501792",email:"",report:null,feedback:""},
+    {name:"Bhagyodaya Bamgonda",phone:"9359944255",email:"",report:"https://drive.google.com/file/d/1GLckSFOz32Z2p5Zj4HNVaRH3-Xv1XjJT/view",feedback:"No issues encountered."},
+    {name:"Harsh Gupta",phone:"9311157678",email:"",report:"https://drive.google.com/file/d/18MkdufUNbeObD6M0GHCO9h6mpOXM0ADs/view",feedback:"No issues encountered."},
+    {name:"Pankaj Badgujar",phone:"9322819173",email:"",report:"https://drive.google.com/file/d/1WP9vKmuOiEr5SbDhgJ31GrRvWQVUI4sF/view",feedback:"No issues encountered."}
+  ]},
+  {id:"PY2",name:"Python Developer 2",role:"Python Developer",features:["monitors","plagiarism","copypaste","tab","multipeople","lookaway","aiavatar","followup"],candidates:[
+    {name:"Athul Krishna",phone:"8848943819",email:"",report:"https://drive.google.com/file/d/1pKJ5EutqSPMbeJQ2ZEDx9pYHWgT7AxKh/view",feedback:"No issue encountered"},
+    {name:"Jaswinder Singh",phone:"8544965742",email:"",report:"https://drive.google.com/file/d/1P04kg7TyU9_RRPeMfNWy2q-1n6FweUFc/view",feedback:"No issue encountered"},
+    {name:"Tushar Dahiya",phone:"9416411597",email:"",report:"https://drive.google.com/file/d/11Pq7tga5sW6EqYF49ERALxXkqxKp4n08/view",feedback:"No issue encountered"}
+  ]},
+  {id:"PY3",name:"Python Developer 3",role:"Python Developer",features:["monitors","plagiarism","copypaste","tab"],candidates:[
+    {name:"Athul Krishna",phone:"8848943819",email:"",report:"https://drive.google.com/file/d/1pKJ5EutqSPMbeJQ2ZEDx9pYHWgT7AxKh/view",feedback:"No issue encountered"}
+  ]},
+  {id:"HR1",name:"Human Resources 1",role:"Human Resources",features:["plagiarism","followup"],candidates:[
+    {name:"Anshika Yadav",phone:"9899991201",email:"",report:"https://drive.google.com/file/d/1tqBUFjIoGmMvuVYZN8t7MMGt6OTdI2T9/view",feedback:"No issues; minor delay despite stable network."},
+    {name:"Ronith Bodepudi",phone:"9490406611",email:"",report:"https://drive.google.com/file/d/1QdRQqsu5A7SDxwNzILGI61PvOVnP6TWJ/view",feedback:"Delay in question upload; otherwise, no issues."},
+    {name:"Tavleen Kaur",phone:"9811884996",email:"",report:null,feedback:""}
+  ]},
+  {id:"HR2",name:"Human Resources 2",role:"Human Resources",features:["lookaway","multipeople"],candidates:[
+    {name:"Anshika Yadav",phone:"9899991201",email:"",report:null,feedback:"No issues; minor delay."},
+    {name:"Ronith Bodepudi",phone:"9490406611",email:"",report:null,feedback:"Delay in question upload."}
+  ]},
+  {id:"HR6",name:"Human Resources 6",role:"Human Resources",features:["plagiarism","copypaste","tab"],candidates:[
+    {name:"Indranil Chakraborty",phone:"8599939991",email:"",report:null,feedback:""},
+    {name:"Shweta Shukla",phone:"9558461548",email:"",report:null,feedback:""},
+    {name:"Kavita Jangir",phone:"9694728743",email:"",report:null,feedback:""}
+  ]},
+  {id:"HR10",name:"Human Resources 10",role:"Human Resources",features:["lookaway","multipeople","tab"],candidates:[
+    {name:"Bogireddy Nithin Kumar Reddy",phone:"9652116447",email:"",report:"https://drive.google.com/file/d/1LnG2daKpOSczUN_zVqO1YgX-sKUWljm3/view",feedback:"No issues encountered."}
+  ]},
+  {id:"AI1",name:"AI 1",role:"AI",features:["lookaway","aiavatar","followup"],candidates:[
+    {name:"Shivani Chaudhary",phone:"8104893630",email:"",report:null,feedback:"Audio errors"},
+    {name:"Vikash Kumar Gupta",phone:"8604833421",email:"",report:null,feedback:"Server issues"},
+    {name:"Rishabh",phone:"7018778798",email:"",report:null,feedback:"Call done — no difficulties"}
+  ]},
+  {id:"AI2",name:"AI 2",role:"AI",features:["multipeople","aiavatar","tab"],candidates:[
+    {name:"Aishwarya Sinha",phone:"8303736487",email:"",report:null,feedback:"Audio issues"},
+    {name:"Swaraj Ladke",phone:"9359123490",email:"",report:null,feedback:"Sound and text issues"},
+    {name:"Gajanan Dhangude",phone:"9579087176",email:"",report:null,feedback:"Too many follow-up questions"}
+  ]},
+  {id:"DM1",name:"Digital Marketing 1",role:"Digital Marketing",features:["plagiarism","followup","aiavatar"],candidates:[
+    {name:"Ankit Nagar",phone:"9352170818",email:"",report:null,feedback:"Call done"},
+    {name:"Mohammed Ayyan",phone:"8209197749",email:"",report:null,feedback:"Call done"},
+    {name:"Shriya Saxena",phone:"7982728630",email:"",report:null,feedback:"Call done"}
+  ]},
+  {id:"DM2",name:"Digital Marketing 2",role:"Digital Marketing",features:["copypaste","followup","tab"],candidates:[
+    {name:"Vinod Kumar",phone:"7015303939",email:"",report:null,feedback:"Call done"},
+    {name:"Madhurya Alluri",phone:"7680942698",email:"",report:null,feedback:"Call done"}
+  ]},
+  {id:"DM6",name:"Digital Marketing 6",role:"Digital Marketing",features:["lookaway","multipeople","aiavatar","tab"],candidates:[
+    {name:"Ankita Bhandakkar",phone:"9834095288",email:"",report:null,feedback:"Call done"},
+    {name:"Shristi Agarwal",phone:"7980661897",email:"",report:null,feedback:"Call done"}
+  ]},
+  {id:"UX1",name:"UI/UX Designer 1",role:"UI/UX Designer",features:["plagiarism","copypaste","followup","tab"],candidates:[
+    {name:"Vikram Neerukonda",phone:"8688709794",email:"",report:null,feedback:""},
+    {name:"Raghasree Kosigi",phone:"9989180206",email:"",report:null,feedback:""}
+  ]},
+  {id:"UX3",name:"UI/UX Designer 3",role:"UI/UX Designer",features:["plagiarism","copypaste","tab","followup","aiavatar"],candidates:[
+    {name:"Shalaka Kadam",phone:"9326571057",email:"",report:null,feedback:""},
+    {name:"Priyanshi Rathi",phone:"8002938033",email:"",report:null,feedback:""}
+  ]},
+  {id:"IOS1",name:"iOS Testing",role:"iOS Testing",features:["plagiarism","copypaste"],candidates:[
+    {name:"Rutika Sawant",phone:"9969115193",email:"",report:null,feedback:""},
+    {name:"Shiva Chavhan",phone:"8408060967",email:"",report:null,feedback:""}
+  ]}
+];
+
+function loadData(){
+  try{var r=localStorage.getItem(STORE_KEY);if(r){var d=JSON.parse(r);if(d&&d.length)return d;}}catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_HIRINGS));
+}
+function saveData(){try{localStorage.setItem(STORE_KEY,JSON.stringify(HIRINGS));}catch(e){}}
+var HIRINGS=loadData();
+
+// ════════════════════════════════════════════════════
+// COMBINATIONS ENGINE
+// ════════════════════════════════════════════════════
+function comboKey(arr){return arr.slice().sort().join("|");}
+function buildHiringMap(){
+  var m={};
+  HIRINGS.forEach(function(h){var k=comboKey(h.features);if(!m[k])m[k]=[];m[k].push(h);});
+  return m;
+}
+function getCombinations(arr,r){
+  var res=[];
+  function bt(s,cur){if(cur.length===r){res.push(cur.slice());return;}for(var i=s;i<arr.length;i++){cur.push(arr[i]);bt(i+1,cur);cur.pop();}}
+  bt(0,[]);return res;
+}
+var KEYS=FEATURES.map(function(f){return f.key;});
+function buildAllCombos(){
+  var hiringMap=buildHiringMap();
+  var assignedKeys={};Object.keys(hiringMap).forEach(function(k){assignedKeys[k]=true;});
+  var assigned=[],unassigned={};
+  for(var r=2;r<=12;r++){
+    unassigned[r]=[];
+    getCombinations(KEYS,r).forEach(function(c){
+      if(assignedKeys[comboKey(c)])assigned.push(c);
+      else unassigned[r].push(c);
+    });
+  }
+  var totalU=0;for(var rr=2;rr<=12;rr++)totalU+=unassigned[rr].length;
+  function seededShuffle(arr,seed){var a=arr.slice(),s=seed;for(var i=a.length-1;i>0;i--){s=((s*1664525)+1013904223)|0;var j=Math.abs(s)%(i+1);var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  var sampled=[];
+  for(var rv=2;rv<=12;rv++){var pool=unassigned[rv];var q=Math.round((pool.length/totalU)*974);seededShuffle(pool,rv*31337).slice(0,q).forEach(function(c){sampled.push(c);});}
+  var all=assigned.concat(sampled);
+  all.sort(function(a,b){return a.length-b.length||comboKey(a).localeCompare(comboKey(b));});
+  var seen={};
+  return all.filter(function(c){var k=comboKey(c);if(seen[k])return false;seen[k]=true;return true;});
+}
+var ALL_COMBOS=buildAllCombos();
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+var activeRole="All",activeCount="all",searchTerm="",activeFeat={};
+var openRows={},currentPage=0,PAGE_SIZE=50;
+var editingHiringId=null,addCandHiringId=null;
+var activeImportTab="table";
+
+function getRoles(){var r=["All"];HIRINGS.forEach(function(h){if(r.indexOf(h.role)<0)r.push(h.role);});return r;}
+
+// ════════════════════════════════════════════════════
+// RENDER HEADER
+// ════════════════════════════════════════════════════
+function renderHeader(){
+  var tc=HIRINGS.reduce(function(a,h){return a+h.candidates.length;},0);
+  document.getElementById("hdrStats").innerHTML=
+    '<div class="hstat"><div class="hstat-val">'+ALL_COMBOS.length+'</div><div class="hstat-lbl">Combos</div></div>'+
+    '<div class="hstat" style="margin-left:16px"><div class="hstat-val">'+HIRINGS.length+'</div><div class="hstat-lbl">Hirings</div></div>'+
+    '<div class="hstat" style="margin-left:16px"><div class="hstat-val">'+tc+'</div><div class="hstat-lbl">Candidates</div></div>';
+}
+
+// ════════════════════════════════════════════════════
+// RENDER SIDEBAR
+// ════════════════════════════════════════════════════
+function renderRoles(){
+  var roles=getRoles();
+  var html="";
+  roles.forEach(function(r){
+    var cnt=r==="All"?HIRINGS.length:HIRINGS.filter(function(h){return h.role===r;}).length;
+    html+='<button class="role-btn'+(r===activeRole?" active":"")+'" onclick="setRole(\''+esc(r)+'\')">'
+      +'<span>'+esc(r)+'</span><span class="rbadge">'+cnt+'</span></button>';
+  });
+  document.getElementById("roleList").innerHTML=html;
+  // update datalist for role input
+  var dl=document.getElementById("rolesList");
+  if(dl){dl.innerHTML=roles.filter(function(r){return r!=="All";}).map(function(r){return '<option value="'+esc(r)+'">';}).join("");}
+}
+function renderFeatChips(){
+  var html="";
+  FEATURES.forEach(function(f){
+    html+='<span class="fchip'+(activeFeat[f.key]?" active":"")+'" onclick="toggleFeat(\''+f.key+'\')">'
+      +'<span class="fchip-dot" style="background:'+f.dot+'"></span>'+esc(f.label)+'</span>';
+  });
+  document.getElementById("featChips").innerHTML=html;
+}
+function renderFcountTabs(){
+  var counts=["all"];var seen={};ALL_COMBOS.forEach(function(c){seen[c.length]=true;});
+  Object.keys(seen).sort(function(a,b){return +a-+b;}).forEach(function(k){counts.push(k);});
+  var html="";
+  counts.forEach(function(t){
+    html+='<button class="fct'+(t===activeCount?" active":"")+'" onclick="setCount(\''+t+'\')">'+(t==="all"?"All":t)+'</button>';
+  });
+  document.getElementById("fcountTabs").innerHTML=html;
+}
+
+// ════════════════════════════════════════════════════
+// FILTER + RENDER
+// ════════════════════════════════════════════════════
+function setRole(r){activeRole=r;currentPage=0;openRows={};renderRoles();render();}
+function setCount(c){activeCount=c;currentPage=0;openRows={};renderFcountTabs();render();}
+function toggleFeat(k){activeFeat[k]=!activeFeat[k];currentPage=0;openRows={};renderFeatChips();render();}
+function onSearch(){searchTerm=document.getElementById("searchInput").value;currentPage=0;openRows={};render();}
+function toggleRow(g){openRows[g]=!openRows[g];render();}
+
+function getFiltered(){
+  var hiringMap=buildHiringMap();
+  var list=ALL_COMBOS;
+  if(activeCount!=="all")list=list.filter(function(c){return c.length===+activeCount;});
+  if(document.getElementById("onlyHiring").checked)list=list.filter(function(c){return !!hiringMap[comboKey(c)];});
+  if(activeRole!=="All")list=list.filter(function(c){var h=hiringMap[comboKey(c)];return h&&h.some(function(x){return x.role===activeRole;});});
+  var afk=Object.keys(activeFeat).filter(function(k){return activeFeat[k];});
+  if(afk.length)list=list.filter(function(c){return afk.every(function(fk){return c.indexOf(fk)>=0;});});
+  if(searchTerm){
+    var s=searchTerm.toLowerCase();
+    list=list.filter(function(c){
+      var fm=c.some(function(k){var f=FEATURES.find(function(x){return x.key===k;});return f&&f.label.toLowerCase().indexOf(s)>=0;});
+      var hh=hiringMap[comboKey(c)];
+      var hm=hh&&hh.some(function(h){return h.name.toLowerCase().indexOf(s)>=0||h.candidates.some(function(cd){return cd.name.toLowerCase().indexOf(s)>=0;});});
+      return fm||hm;
+    });
+  }
+  return list;
+}
+
+function statusOf(c){
+  var fb=(c.feedback||"").toLowerCase();
+  if(fb.indexOf("no issue")>=0||fb.indexOf("call done")>=0||fb.indexOf("no difficulties")>=0)return{cls:"sp-ok",label:"✓ OK"};
+  if(c.feedback&&c.feedback.trim())return{cls:"sp-warn",label:"⚠ Issue"};
+  return{cls:"sp-pend",label:"Pending"};
+}
+
+function render(){
+  var hiringMap=buildHiringMap();
+  var filtered=getFiltered();
+  var total=filtered.length;
+  var pages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(currentPage>=pages)currentPage=pages-1;
+  var slice=filtered.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE);
+  var offset=currentPage*PAGE_SIZE;
+  var tc=HIRINGS.reduce(function(a,h){return a+h.candidates.length;},0);
+
+  document.getElementById("countInfo").innerHTML=
+    '<span class="chip chip-blue">'+Object.keys(hiringMap).length+' combos assigned</span>'+
+    '<span class="chip chip-green">'+tc+' candidates</span>'+
+    '<span>Showing <strong>'+total.toLocaleString()+'</strong> of '+ALL_COMBOS.length.toLocaleString()+'</span>';
+
+  var listHtml="";
+  slice.forEach(function(combo,i){
+    var g=offset+i;
+    var key=comboKey(combo);
+    var hirings=hiringMap[key]||[];
+    var hasH=hirings.length>0;
+    var isOpen=!!openRows[g];
+
+    var pills=combo.map(function(k){var f=FEATURES.find(function(x){return x.key===k;});return f?'<span class="pill '+f.color+'">'+esc(f.label)+'</span>':"";}).join("");
+
+    var metaHtml="";
+    if(hasH){
+      hirings.forEach(function(h){metaHtml+='<span class="h-tag">'+esc(h.name)+'</span>';});
+      var tc2=hirings.reduce(function(a,h){return a+h.candidates.length;},0);
+      metaHtml+='<span class="c-badge">'+tc2+'</span>';
+    } else {
+      metaHtml='<span class="no-h">No hiring</span>';
+    }
+
+    var detailHtml="";
+    if(isOpen){
+      if(hasH){
+        hirings.forEach(function(h){
+          var rows=h.candidates.map(function(c,ci){
+            var ini=c.name.split(" ").slice(0,2).map(function(n){return n[0];}).join("").toUpperCase();
+            var st=statusOf(c);
+            var rpt=c.report?'<a class="rpt-a" href="'+c.report+'" target="_blank">↗ View</a>':'<span style="font-size:11px;color:var(--text3)">—</span>';
+            return '<tr>'
+              +'<td><div class="c-nc"><div class="c-av">'+ini+'</div><div><div class="c-name">'+esc(c.name)+'</div><div class="c-contact">'+(c.phone||c.email||"—")+'</div></div></div></td>'
+              +'<td><div class="c-fb">'+(c.feedback?esc(c.feedback):'<em style="color:var(--text3)">No feedback</em>')+'</div></td>'
+              +'<td><span class="sp '+st.cls+'">'+st.label+'</span></td>'
+              +'<td>'+rpt+'</td>'
+              +'<td><button class="icon-btn" onclick="openEditCand(\''+h.id+'\','+ci+')" title="Edit">✏️</button></td>'
+              +'</tr>';
+          }).join("");
+          detailHtml+='<div class="h-block">'
+            +'<div class="h-block-top">'
+              +'<div><div class="h-block-name">'+esc(h.name)+'</div><div class="h-block-role">'+esc(h.role)+' · '+h.features.length+' features</div></div>'
+              +'<div class="h-block-actions">'
+                +'<button class="icon-btn primary" onclick="openAddCandFor(\''+h.id+'\')" title="Add candidates">＋ Candidates</button>'
+                +'<button class="icon-btn danger" onclick="confirmDeleteHiring(\''+h.id+'\')" title="Delete hiring">🗑</button>'
+              +'</div>'
+            +'</div>'
+            +(rows?'<table class="cand-tbl"><thead><tr><th>Candidate</th><th>Feedback</th><th>Status</th><th>Report</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>':'<div style="font-size:12px;color:var(--text3);font-style:italic;padding:4px 0">No candidates yet — click ＋ Candidates to add</div>')
+          +'</div>';
+        });
+      } else {
+        detailHtml='<div class="no-h-msg"><span>No hiring assigned to this combination.</span>'
+          +'<button class="icon-btn primary" onclick="openAddHiringForCombo(\''+key+'\')">＋ Assign Hiring</button></div>';
+      }
+    }
+
+    listHtml+='<div class="combo-card'+(hasH?" has-hiring":"")+'">'
+      +'<div class="combo-hdr" onclick="toggleRow('+g+')">'
+        +'<span class="combo-idx">#'+String(g+1).padStart(4,"0")+'</span>'
+        +'<div class="feat-pills">'+pills+'</div>'
+        +'<div class="combo-meta">'+metaHtml+'<span class="chev'+(isOpen?" open":"")+'">▾</span></div>'
+      +'</div>'
+      +(isOpen?'<div class="combo-detail open">'+detailHtml+'</div>':'')
+    +'</div>';
+  });
+  document.getElementById("comboList").innerHTML=listHtml;
+
+  var btns='<button class="pg-btn" onclick="goPage('+(currentPage-1)+')" '+(currentPage===0?"disabled":"")+'>← Prev</button>';
+  var ps=Math.max(0,currentPage-2),pe=Math.min(pages-1,currentPage+2);
+  for(var p=ps;p<=pe;p++)btns+='<button class="pg-btn'+(p===currentPage?" active":"")+'" onclick="goPage('+p+')">'+(p+1)+'</button>';
+  btns+='<button class="pg-btn" onclick="goPage('+(currentPage+1)+')" '+(currentPage===pages-1?"disabled":"")+'>Next →</button>';
+  btns+='<span class="pg-info">Page '+(currentPage+1)+' / '+pages+' · '+total.toLocaleString()+' results</span>';
+  document.getElementById("pager").innerHTML=btns;
+}
+
+function goPage(p){var f=getFiltered();var pages=Math.max(1,Math.ceil(f.length/PAGE_SIZE));if(p<0||p>=pages)return;currentPage=p;openRows={};render();document.querySelector(".list-wrap").scrollTop=0;}
+
+// ════════════════════════════════════════════════════
+// ADD HIRING MODAL
+// ════════════════════════════════════════════════════
+var preSelectedComboKey=null;
+
+function openModal(id){
+  if(id==="addHiring"){
+    editingHiringId=null;
+    preSelectedComboKey=null;
+    document.getElementById("addHiringTitle").textContent="Create New Hiring";
+    document.getElementById("ah-name").value="";
+    document.getElementById("ah-role").value="";
+    renderFeatGrid([]);
+    document.getElementById("ah-combo-preview").textContent="";
+  }
+  if(id==="addCand"){
+    populateHiringSelect();
+    resetCandTable();
+    document.getElementById("pasteArea").value="";
+    document.getElementById("pastePreview").textContent="";
+    document.getElementById("ac-combo-info").style.display="none";
+  }
+  document.getElementById("ov"+capitalize(id)).classList.add("open");
+}
+
+function openAddHiringForCombo(key){
+  editingHiringId=null;
+  preSelectedComboKey=key;
+  document.getElementById("addHiringTitle").textContent="Assign Hiring to this Combination";
+  document.getElementById("ah-name").value="";
+  document.getElementById("ah-role").value="";
+  // Pre-check features from the key
+  var feats=key.split("|");
+  renderFeatGrid(feats);
+  updateComboPreview();
+  document.getElementById("ovAddHiring").classList.add("open");
+}
+
+function openAddCandFor(hiringId){
+  populateHiringSelect();
+  document.getElementById("ac-hiring").value=hiringId;
+  onHiringChange();
+  resetCandTable();
+  document.getElementById("pasteArea").value="";
+  document.getElementById("pastePreview").textContent="";
+  document.getElementById("ovAddCand").classList.add("open");
+}
+
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+function ovClick(e,id){if(e.target===document.getElementById(id))closeModal(id);}
+function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function renderFeatGrid(selected){
+  var html="";
+  FEATURES.forEach(function(f){
+    var on=selected.indexOf(f.key)>=0;
+    html+='<label class="feat-cb'+(on?" on":"")+'" onclick="toggleFeatCb(this,\''+f.key+'\')">'
+      +'<input type="checkbox"'+(on?" checked":"")+'>'+esc(f.label)+'</label>';
+  });
+  document.getElementById("ah-featGrid").innerHTML=html;
+}
+
+function toggleFeatCb(el,key){
+  el.classList.toggle("on");
+  updateComboPreview();
+}
+
+function getSelectedFeats(){
+  var feats=[];
+  document.querySelectorAll("#ah-featGrid .feat-cb.on").forEach(function(el){
+    var label=el.textContent.trim();
+    var f=FEATURES.find(function(x){return x.label===label;});
+    if(f)feats.push(f.key);
+  });
+  return feats;
+}
+
+function updateComboPreview(){
+  var feats=getSelectedFeats();
+  var prev=document.getElementById("ah-combo-preview");
+  if(!feats.length){prev.textContent="";return;}
+  var k=comboKey(feats);
+  var hiringMap=buildHiringMap();
+  var existing=hiringMap[k];
+  if(existing&&existing.length){
+    prev.innerHTML='<span style="color:var(--amber)">⚠ This combination already has: '+existing.map(function(h){return esc(h.name);}).join(", ")+'</span>';
+  } else {
+    prev.innerHTML='<span style="color:var(--green)">✓ New combination with '+feats.length+' features</span>';
+  }
+}
+
+function saveHiring(){
+  var name=document.getElementById("ah-name").value.trim();
+  var role=document.getElementById("ah-role").value.trim();
+  var feats=getSelectedFeats();
+  if(!name){toast("Please enter a hiring name","red");return;}
+  if(!role){toast("Please enter a role / department","red");return;}
+  if(feats.length<2){toast("Select at least 2 features","red");return;}
+
+  // Generate unique ID
+  var prefix=role.replace(/[^a-zA-Z]/g,"").substring(0,3).toUpperCase()||"H";
+  var num=HIRINGS.filter(function(h){return h.id.indexOf(prefix)===0;}).length+1;
+  var newId=prefix+num;
+  while(HIRINGS.find(function(h){return h.id===newId;})){num++;newId=prefix+num;}
+
+  HIRINGS.push({id:newId,name:name,role:role,features:feats,candidates:[]});
+  saveData();
+
+  // Rebuild combos if new combo
+  var k=comboKey(feats);
+  var inList=ALL_COMBOS.some(function(c){return comboKey(c)===k;});
+  if(!inList){
+    ALL_COMBOS.unshift(feats);
+  }
+
+  closeModal("ovAddHiring");
+  renderHeader();renderRoles();renderFcountTabs();
+  openRows={};render();
+  toast("Hiring '"+name+"' created (ID: "+newId+")","green");
+}
+
+// ════════════════════════════════════════════════════
+// ADD CANDIDATES MODAL
+// ════════════════════════════════════════════════════
+function populateHiringSelect(){
+  var sel=document.getElementById("ac-hiring");
+  sel.innerHTML='<option value="">— choose a hiring —</option>';
+  HIRINGS.forEach(function(h){
+    sel.innerHTML+='<option value="'+h.id+'">'+esc(h.name)+' ('+esc(h.role)+') — '+h.candidates.length+' candidates</option>';
+  });
+}
+
+function onHiringChange(){
+  var hid=document.getElementById("ac-hiring").value;
+  var info=document.getElementById("ac-combo-info");
+  var featsEl=document.getElementById("ac-combo-feats");
+  if(!hid){info.style.display="none";return;}
+  var h=HIRINGS.find(function(x){return x.id===hid;});
+  if(!h){info.style.display="none";return;}
+  info.style.display="block";
+  featsEl.innerHTML=h.features.map(function(k){
+    var f=FEATURES.find(function(x){return x.key===k;});
+    return f?'<span class="pill '+f.color+'">'+esc(f.label)+'</span>':"";
+  }).join("");
+}
+
+function switchTab(tab){
+  activeImportTab=tab;
+  document.querySelectorAll(".import-tab").forEach(function(el,i){
+    el.classList.toggle("active",i===(tab==="table"?0:1));
+  });
+  document.getElementById("tab-table").classList.toggle("active",tab==="table");
+  document.getElementById("tab-paste").classList.toggle("active",tab==="paste");
+}
+
+var candRowCount=0;
+function resetCandTable(){
+  candRowCount=0;
+  document.getElementById("candInputBody").innerHTML="";
+  addCandRow();addCandRow();addCandRow();
+}
+
+function addCandRow(){
+  candRowCount++;
+  var n=candRowCount;
+  var tbody=document.getElementById("candInputBody");
+  var tr=document.createElement("tr");
+  tr.id="crow-"+n;
+  tr.innerHTML=
+    '<td style="text-align:center;color:var(--text3);font-size:10px">'+n+'</td>'
+    +'<td><input placeholder="Full name" id="cn-'+n+'" oninput="autoAddRow('+n+')"></td>'
+    +'<td><input placeholder="9876543210" id="cp-'+n+'" type="tel" maxlength="10"></td>'
+    +'<td><input placeholder="email@example.com" id="ce-'+n+'" type="email"></td>'
+    +'<td><input placeholder="https://drive.google.com/..." id="cr-'+n+'"></td>'
+    +'<td><input placeholder="No issues / Audio problem..." id="cf-'+n+'"></td>'
+    +'<td><button class="del-row-btn" onclick="delCandRow('+n+')" title="Remove">✕</button></td>';
+  tbody.appendChild(tr);
+}
+
+function autoAddRow(n){
+  // Auto add a row when last row starts being filled
+  var rows=document.querySelectorAll("#candInputBody tr");
+  var lastRow=rows[rows.length-1];
+  if(lastRow&&lastRow.id==="crow-"+n){
+    addCandRow();
+  }
+}
+
+function delCandRow(n){
+  var row=document.getElementById("crow-"+n);
+  if(row)row.remove();
+}
+
+function getTableCandidates(){
+  var result=[];
+  document.querySelectorAll("#candInputBody tr").forEach(function(tr){
+    var id=tr.id.replace("crow-","");
+    var name=(document.getElementById("cn-"+id)||{}).value||"";
+    var phone=(document.getElementById("cp-"+id)||{}).value||"";
+    var email=(document.getElementById("ce-"+id)||{}).value||"";
+    var report=(document.getElementById("cr-"+id)||{}).value||"";
+    var feedback=(document.getElementById("cf-"+id)||{}).value||"";
+    name=name.trim();
+    if(!name)return;
+    result.push({
+      name:name,phone:phone.trim(),email:email.trim(),
+      report:(report.trim().indexOf("http")===0)?report.trim():null,
+      feedback:feedback.trim()
+    });
+  });
+  return result;
+}
+
+function parsePasteData(text){
+  var lines=text.trim().split("\n").filter(function(l){return l.trim();});
+  var result=[];
+  lines.forEach(function(line){
+    var cols=line.split("\t").map(function(c){return c.trim();});
+    if(!cols[0])return;
+    var name=cols[0];
+    if(name.toLowerCase()==="name"||name.toLowerCase()==="s.no")return;
+    var phone="",email="",report=null,feedback="";
+    for(var i=1;i<cols.length;i++){
+      var v=cols[i];if(!v)continue;
+      if(/^[6-9]\d{9}$/.test(v.replace(/\s/g,""))&&!phone){phone=v.replace(/\s/g,"");continue;}
+      if(v.indexOf("@")>0&&!email){email=v;continue;}
+      if(v.indexOf("http")===0&&!report){report=v;continue;}
+      if(v.length>2&&!feedback){feedback=v;}
+    }
+    result.push({name:name,phone:phone,email:email,report:report,feedback:feedback});
+  });
+  return result;
+}
+
+function previewPaste(){
+  var text=document.getElementById("pasteArea").value;
+  var parsed=parsePasteData(text);
+  var el=document.getElementById("pastePreview");
+  if(!parsed.length){el.textContent="";return;}
+  el.innerHTML='<span style="color:var(--green)">✓ '+parsed.length+' candidates detected</span>: '+
+    parsed.map(function(c){return esc(c.name);}).join(", ");
+}
+
+function saveCandidates(){
+  var hid=document.getElementById("ac-hiring").value;
+  if(!hid){toast("Please select a hiring first","red");return;}
+  var h=HIRINGS.find(function(x){return x.id===hid;});
+  if(!h){toast("Hiring not found","red");return;}
+
+  var candidates=activeImportTab==="table"?getTableCandidates():parsePasteData(document.getElementById("pasteArea").value);
+  if(!candidates.length){toast("No valid candidates found","red");return;}
+
+  var added=0,updated=0;
+  candidates.forEach(function(nc){
+    var existing=h.candidates.find(function(c){return c.name.toLowerCase()===nc.name.toLowerCase();});
+    if(existing){
+      if(nc.phone)existing.phone=nc.phone;
+      if(nc.email)existing.email=nc.email;
+      if(nc.report)existing.report=nc.report;
+      if(nc.feedback)existing.feedback=nc.feedback;
+      updated++;
+    } else {
+      h.candidates.push(nc);added++;
+    }
+  });
+
+  saveData();
+  closeModal("ovAddCand");
+  renderHeader();openRows={};render();
+  toast("Added "+added+" · Updated "+updated+" candidates in '"+h.name+"'","green");
+}
+
+// ════════════════════════════════════════════════════
+// EDIT CANDIDATE
+// ════════════════════════════════════════════════════
+function openEditCand(hid,idx){
+  var h=HIRINGS.find(function(x){return x.id===hid;});
+  if(!h||!h.candidates[idx])return;
+  var c=h.candidates[idx];
+  document.getElementById("ec-hid").value=hid;
+  document.getElementById("ec-idx").value=idx;
+  document.getElementById("ec-name").value=c.name||"";
+  document.getElementById("ec-phone").value=c.phone||c.contact||"";
+  document.getElementById("ec-email").value=c.email||"";
+  document.getElementById("ec-report").value=c.report||"";
+  document.getElementById("ec-feedback").value=c.feedback||"";
+  document.getElementById("ovEditCand").classList.add("open");
+}
+
+function saveEditCandidate(){
+  var hid=document.getElementById("ec-hid").value;
+  var idx=+document.getElementById("ec-idx").value;
+  var h=HIRINGS.find(function(x){return x.id===hid;});
+  if(!h||!h.candidates[idx])return;
+  h.candidates[idx].name=document.getElementById("ec-name").value.trim();
+  h.candidates[idx].phone=document.getElementById("ec-phone").value.trim();
+  h.candidates[idx].email=document.getElementById("ec-email").value.trim();
+  var rep=document.getElementById("ec-report").value.trim();
+  h.candidates[idx].report=rep.indexOf("http")===0?rep:null;
+  h.candidates[idx].feedback=document.getElementById("ec-feedback").value.trim();
+  saveData();closeModal("ovEditCand");openRows={};render();
+  toast("Candidate updated","green");
+}
+
+function deleteCandidate(){
+  var hid=document.getElementById("ec-hid").value;
+  var idx=+document.getElementById("ec-idx").value;
+  var h=HIRINGS.find(function(x){return x.id===hid;});
+  if(!h)return;
+  var name=h.candidates[idx]?h.candidates[idx].name:"candidate";
+  document.getElementById("confirmMsg").textContent='Delete "'+name+'" from "'+h.name+'"? This cannot be undone.';
+  document.getElementById("confirmOkBtn").onclick=function(){
+    h.candidates.splice(idx,1);saveData();
+    closeModal("ovConfirm");closeModal("ovEditCand");
+    openRows={};render();renderHeader();
+    toast("Candidate deleted");
+  };
+  document.getElementById("ovConfirm").classList.add("open");
+}
+
+function confirmDeleteHiring(hid){
+  var h=HIRINGS.find(function(x){return x.id===hid;});
+  if(!h)return;
+  document.getElementById("confirmMsg").textContent='Delete hiring "'+h.name+'" and all '+h.candidates.length+' candidates? This cannot be undone.';
+  document.getElementById("confirmOkBtn").onclick=function(){
+    HIRINGS=HIRINGS.filter(function(x){return x.id!==hid;});
+    saveData();closeModal("ovConfirm");
+    renderHeader();renderRoles();openRows={};render();
+    toast("Hiring deleted");
+  };
+  document.getElementById("ovConfirm").classList.add("open");
+}
+
+// ════════════════════════════════════════════════════
+// BACKUP / RESTORE
+// ════════════════════════════════════════════════════
+function exportBackup(){
+  var data=JSON.stringify({hirings:HIRINGS,exported:new Date().toISOString()},null,2);
+  var blob=new Blob([data],{type:"application/json"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="pc_hiring_backup_"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  toast("Backup downloaded","green");
+}
+function triggerRestore(){document.getElementById("restoreFile").click();}
+function restoreBackup(e){
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      var data=JSON.parse(ev.target.result);
+      if(data.hirings&&data.hirings.length){
+        HIRINGS=data.hirings;saveData();
+        ALL_COMBOS=buildAllCombos();
+        renderHeader();renderRoles();renderFeatChips();renderFcountTabs();openRows={};render();
+        toast("Restored "+HIRINGS.length+" hirings","green");
+      } else {toast("Invalid backup file","red");}
+    }catch(err){toast("Could not read backup file","red");}
+  };
+  reader.readAsText(file);
+  e.target.value="";
+}
+
+// ════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════
+function esc(s){
+  if(!s)return"";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+var toastTimer=null;
+function toast(msg,type){
+  var el=document.getElementById("toast");
+  el.textContent=msg;
+  el.className="toast"+(type?" "+type:"");
+  void el.offsetWidth;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){el.classList.remove("show");},2800);
+}
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+renderHeader();
+renderRoles();
+renderFeatChips();
+renderFcountTabs();
+render();
+</script>
+</body>
+</html>
